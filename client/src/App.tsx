@@ -25,6 +25,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/create-listing" component={CreateListing} />
           <Route path="/listing/:id" component={ListingDetails} />
+          <Route path="/supplier" component={SupplierPanel} />
           <Route path="/admin" component={Admin} />
         </>
       )}

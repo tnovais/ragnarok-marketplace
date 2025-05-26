@@ -42,49 +42,12 @@ export default function FeaturedItems() {
     );
   }
 
-  // If no official items, show placeholder content
-  const displayItems = featuredListings.length > 0 ? featuredListings.slice(0, 4) : [
-    {
-      id: "featured-1",
-      title: "1.000.000 Zeny",
-      itemName: "Zeny Package",
-      price: "45.00",
-      server: { name: "Thor" },
-      category: { name: "Zeny" },
-      isOfficial: true,
-      screenshots: [PLACEHOLDER_IMAGES.GOLD],
-    },
-    {
-      id: "featured-2", 
-      title: "Excalibur [4]",
-      itemName: "Excalibur",
-      price: "120.00",
-      server: { name: "Odin" },
-      category: { name: "Armas" },
-      isOfficial: true,
-      screenshots: [PLACEHOLDER_IMAGES.WEAPON],
-    },
-    {
-      id: "featured-3",
-      title: "Carta Thanatos",
-      itemName: "Thanatos Card",
-      price: "350.00", 
-      server: { name: "Loki" },
-      category: { name: "Cartas" },
-      isOfficial: true,
-      screenshots: [PLACEHOLDER_IMAGES.ITEM],
-    },
-    {
-      id: "featured-4",
-      title: "Corona da Glória",
-      itemName: "Crown of Glory",
-      price: "200.00",
-      server: { name: "Freya" },
-      category: { name: "Acessórios" },
-      isOfficial: true,
-      screenshots: [PLACEHOLDER_IMAGES.ACCESSORY],
-    },
-  ];
+  // Hide section completely if no official items from the site
+  if (!isLoading && featuredListings.length === 0) {
+    return null;
+  }
+
+  const displayItems = featuredListings.slice(0, 4);
 
   return (
     <section className="py-12 bg-white">
