@@ -71,6 +71,19 @@ export interface IStorage {
   
   // Update user wallet
   updateUserWallet(userId: string, amount: string): Promise<User>;
+  
+  // Supplier operations (sell directly to site)
+  createSupplierOffer(offer: {
+    supplierId: string;
+    itemName: string;
+    quantity: number;
+    unitPrice: string;
+    description: string;
+    categoryId: number;
+    serverId: number;
+  }): Promise<any>;
+  getSupplierOffers(): Promise<any[]>;
+  acceptSupplierOffer(offerId: string, acceptedQuantity: number): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -97,9 +110,13 @@ export class DatabaseStorage implements IStorage {
 
   // Listing operations
   async createListing(listing: InsertListing): Promise<Listing> {
+    const listingData = {
+      ...listing,
+      screenshots: Array.isArray(listing.screenshots) ? listing.screenshots : []
+    };
     const [newListing] = await db
       .insert(listings)
-      .values(listing)
+      .values(listingData)
       .returning();
     return newListing;
   }
@@ -113,39 +130,40 @@ export class DatabaseStorage implements IStorage {
     isOfficial?: boolean;
     isPromoted?: boolean;
   }): Promise<(Listing & { seller: User; server: Server; category: Category })[]> {
-    let query = db
+    const conditions = [eq(listings.isActive, true), eq(listings.isSold, false)];
+
+    if (filters?.serverId) {
+      conditions.push(eq(listings.serverId, filters.serverId));
+    }
+    if (filters?.categoryId) {
+      conditions.push(eq(listings.categoryId, filters.categoryId));
+    }
+    if (filters?.minPrice) {
+      conditions.push(gte(listings.price, filters.minPrice.toString()));
+    }
+    if (filters?.maxPrice) {
+      conditions.push(lte(listings.price, filters.maxPrice.toString()));
+    }
+    if (filters?.search) {
+      conditions.push(
+        sql`${listings.title} ILIKE ${'%' + filters.search + '%'} OR ${listings.itemName} ILIKE ${'%' + filters.search + '%'}`
+      );
+    }
+    if (filters?.isOfficial !== undefined) {
+      conditions.push(eq(listings.isOfficial, filters.isOfficial));
+    }
+    if (filters?.isPromoted !== undefined) {
+      conditions.push(eq(listings.isPromoted, filters.isPromoted));
+    }
+
+    const result = await db
       .select()
       .from(listings)
       .innerJoin(users, eq(listings.sellerId, users.id))
       .innerJoin(servers, eq(listings.serverId, servers.id))
       .innerJoin(categories, eq(listings.categoryId, categories.id))
-      .where(and(eq(listings.isActive, true), eq(listings.isSold, false)));
-
-    if (filters?.serverId) {
-      query = query.where(eq(listings.serverId, filters.serverId));
-    }
-    if (filters?.categoryId) {
-      query = query.where(eq(listings.categoryId, filters.categoryId));
-    }
-    if (filters?.minPrice) {
-      query = query.where(gte(listings.price, filters.minPrice.toString()));
-    }
-    if (filters?.maxPrice) {
-      query = query.where(lte(listings.price, filters.maxPrice.toString()));
-    }
-    if (filters?.search) {
-      query = query.where(
-        sql`${listings.title} ILIKE ${'%' + filters.search + '%'} OR ${listings.itemName} ILIKE ${'%' + filters.search + '%'}`
-      );
-    }
-    if (filters?.isOfficial !== undefined) {
-      query = query.where(eq(listings.isOfficial, filters.isOfficial));
-    }
-    if (filters?.isPromoted !== undefined) {
-      query = query.where(eq(listings.isPromoted, filters.isPromoted));
-    }
-
-    const result = await query.orderBy(desc(listings.isPromoted), desc(listings.createdAt));
+      .where(and(...conditions))
+      .orderBy(desc(listings.isPromoted), desc(listings.createdAt));
     
     return result.map(row => ({
       ...row.listings,
@@ -203,7 +221,7 @@ export class DatabaseStorage implements IStorage {
   async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
     const [newTransaction] = await db
       .insert(transactions)
-      .values(transaction)
+      .values([transaction])
       .returning();
     return newTransaction;
   }

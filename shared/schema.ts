@@ -38,6 +38,8 @@ export const users = pgTable("users", {
   totalSales: integer("total_sales").default(0),
   totalPurchases: integer("total_purchases").default(0),
   isActive: boolean("is_active").default(true),
+  isSupplier: boolean("is_supplier").default(false), // New: for suppliers who can sell to the site
+  isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
