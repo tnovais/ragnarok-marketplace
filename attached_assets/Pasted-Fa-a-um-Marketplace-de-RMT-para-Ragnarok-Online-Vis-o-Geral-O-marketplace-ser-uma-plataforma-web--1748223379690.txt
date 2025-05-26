@@ -1,0 +1,44 @@
+Faça um Marketplace de RMT para Ragnarok Online
+Visão Geral
+O marketplace será uma plataforma web para compra e venda segura de itens, equipamentos e zenys no MMORPG Ragnarok Online. O sistema usará Pix para pagamentos, cobrará taxas de 10% (acima de R$200) ou 15% (abaixo de R$200) e terá um sistema de custódia e disputas para garantir segurança.
+Funcionalidades Principais
+1.	Cadastro de Usuários:
+o	Registro com e-mail, senha
+o	Perfil com carteira virtual para armazenar saldo de vendas.
+o	Sistema de reputação baseado em avaliações pós-transação.
+2.	Criação de Anúncios:
+o	Vendedores criam anúncios com detalhes do item (nome, servidor, preço, descrição, capturas de tela).
+o	Filtros para busca (ex.: servidor, tipo de item, faixa de preço).
+o	Taxas exibidas claramente antes de publicar o anúncio.
+3.	Processo de Compra:
+o	Comprador seleciona o item e paga via Pix (integrado com PagSeguro ou similar).
+o	Dinheiro fica em custódia até a confirmação da entrega.
+4.	Confirmação de Transação:
+o	Vendedor e comprador enviam capturas de tela da troca in-game (ex.: inventário antes/depois).
+o	Ambos confirmam no site que a transação foi concluída.
+o	Prazo de 72h úteis para liberar o pagamento ao vendedor (após dedução da taxa e período de 7 dias em que possa abrir disputa).
+5.	Sistema de Disputas:
+o	Se houver desacordo, qualquer parte pode abrir uma disputa em até 7 dias.
+o	Usuários enviam evidências (capturas de tela, vídeos).
+o	Moderação humana analisa o caso em até 72h e decide (reembolso ou liberação do pagamento).
+6.	Saques:
+o	Vendedores podem sacar o saldo da carteira via Pix para uma conta bancária verificada.
+o	Saques processados em até 24h após solicitação.
+Tecnologias Sugeridas
+•	Frontend: elysiajs e typescript (talvez mais alguma coisa que achar melhor)
+•	Backend: Bun
+•	Banco de Dados: o que achar melhor para esse tipo
+•	Integração de Pagamentos: PagSeguro ou Pagar.me (suporte a Pix)
+•	Segurança: HTTPS, criptografia de dados sensíveis
+•	O site: Será todo em português brasileiro. 
+•	Utilizar: Coisas do site https://ui.shadcn.com/ para dashboards ou outra coisa em que seja útil. Site simples porém moderno para marketplace, pode usar algumas referencias de outros markeplaces grandes. 
+•	Referencias:  O site é de ragnarok então tem que ter referencias o site oficial do jogo https://ro.gnjoylatam.com/pt/
+Fluxo de Transação
+1.	Vendedor cria anúncio → Comprador paga via Pix → Dinheiro fica em custódia.
+2.	Vendedor entrega item in-game → Ambos enviam evidências e confirmam.
+3.	Site valida transação → Libera pagamento (menos taxa) para a carteira do vendedor.
+4.	Vendedor saca via Pix.
+
+Outros
+1.	Uma área onde o próprio site faça suas vendas, tipo zeny (ouro) ou itens, nisso seria uma destaque pois seria uma venda feita direta pelo proprietário do site, então a segurança seria melhor na questão de entrega, nesse caso o site receberia o dinheiro direto pois é dele mesmo, nesse caso não teria abertura de disputa pois a entrega seria garantida. 
+2.	Os vendedores poderiam comprar anúncios destacados ou com mais visibilidade, ao fazer um anúncio desse a taxa seria menor fixa a 6% do valor da venda. O preço para o destaque no anuncio seria de 20 reais pelo período de 1 mês. Após isso o anuncio perderia o destaque e voltaria a ser um anuncio comum e a taxa voltaria ao valor original que seria cobrado de acordo com o valor da venda. 
