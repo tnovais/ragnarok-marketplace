@@ -137,6 +137,23 @@ export const withdrawals = pgTable("withdrawals", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Supplier offers (for selling directly to the site)
+export const supplierOffers = pgTable("supplier_offers", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  supplierId: varchar("supplier_id").notNull().references(() => users.id),
+  itemName: varchar("item_name", { length: 100 }).notNull(),
+  quantity: integer("quantity").notNull(),
+  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
+  description: text("description").notNull(),
+  categoryId: integer("category_id").notNull().references(() => categories.id),
+  serverId: integer("server_id").notNull().references(() => servers.id),
+  status: varchar("status").default("pending"), // pending, accepted, rejected
+  acceptedQuantity: integer("accepted_quantity"),
+  adminNotes: text("admin_notes"),
+  processedAt: timestamp("processed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   listings: many(listings),
@@ -259,3 +276,13 @@ export type InsertWithdrawal = z.infer<typeof insertWithdrawalSchema>;
 export type Withdrawal = typeof withdrawals.$inferSelect;
 export type Server = typeof servers.$inferSelect;
 export type Category = typeof categories.$inferSelect;
+
+// Supplier offer schemas and types
+export const insertSupplierOfferSchema = createInsertSchema(supplierOffers).omit({
+  id: true,
+  createdAt: true,
+  processedAt: true,
+});
+
+export type InsertSupplierOffer = z.infer<typeof insertSupplierOfferSchema>;
+export type SupplierOffer = typeof supplierOffers.$inferSelect;

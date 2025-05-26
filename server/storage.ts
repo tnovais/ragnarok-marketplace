@@ -384,4 +384,52 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
+  // Supplier operations (sell directly to site)
+  async createSupplierOffer(offer: {
+    supplierId: string;
+    itemName: string;
+    quantity: number;
+    unitPrice: string;
+    description: string;
+    categoryId: number;
+    serverId: number;
+  }): Promise<any> {
+    const [newOffer] = await db
+      .insert(supplierOffers)
+      .values(offer)
+      .returning();
+    return newOffer;
+  }
+
+  async getSupplierOffers(): Promise<any[]> {
+    const result = await db
+      .select()
+      .from(supplierOffers)
+      .innerJoin(users, eq(supplierOffers.supplierId, users.id))
+      .innerJoin(categories, eq(supplierOffers.categoryId, categories.id))
+      .innerJoin(servers, eq(supplierOffers.serverId, servers.id))
+      .orderBy(desc(supplierOffers.createdAt));
+
+    return result.map(row => ({
+      ...row.supplier_offers,
+      supplier: row.users,
+      category: row.categories,
+      server: row.servers,
+    }));
+  }
+
+  async acceptSupplierOffer(offerId: string, acceptedQuantity: number): Promise<any> {
+    const [updatedOffer] = await db
+      .update(supplierOffers)
+      .set({ 
+        status: "accepted",
+        acceptedQuantity,
+        processedAt: new Date()
+      })
+      .where(eq(supplierOffers.id, offerId))
+      .returning();
+    return updatedOffer;
+  }
+}
+
 export const storage = new DatabaseStorage();
