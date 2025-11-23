@@ -97,7 +97,7 @@ export async function requestWithdrawal(formData: FormData) {
             userId: user.id,
             amount: amount.toFixed(2),
             bankAccount: "PIX", // Simplified for now
-            pixKey: pixKey,
+            pixKey: `${pixKeyType.toUpperCase()}:${pixKey}`,
             status: "pending",
             createdAt: new Date(),
         });

@@ -1,30 +1,35 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-// Simple in-memory rate limiter for demonstration/local dev
-// In production, use Redis (e.g., Upstash)
-const rateLimit = new Map();
+// Initialize Redis and Ratelimit only if env vars are present
+const redis = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+    : null;
 
-export function middleware(request: NextRequest) {
-    const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
-    const limit = 100; // Requests per minute
-    const windowMs = 60 * 1000;
+// Create a new ratelimiter, that allows 20 requests per 10 seconds
+const ratelimit = redis
+    ? new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(20, "10 s"),
+        analytics: true,
+    })
+    : null;
 
-    if (!rateLimit.has(ip)) {
-        rateLimit.set(ip, { count: 0, startTime: Date.now() });
+export async function middleware(request: NextRequest) {
+    // Skip rate limiting if Redis is not configured (e.g. local dev without env vars)
+    if (!ratelimit) {
+        return NextResponse.next();
     }
 
-    const data = rateLimit.get(ip);
-    const now = Date.now();
+    const ip = request.headers.get("x-forwarded-for") ?? "127.0.0.1";
+    const { success } = await ratelimit.limit(ip);
 
-    if (now - data.startTime > windowMs) {
-        data.count = 0;
-        data.startTime = now;
-    }
-
-    data.count++;
-
-    if (data.count > limit) {
+    if (!success) {
         return new NextResponse("Too Many Requests", { status: 429 });
     }
 

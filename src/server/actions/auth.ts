@@ -21,12 +21,27 @@ const registerSchema = z.object({
         .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
-export async function register(prevState: any, formData: FormData) {
+export interface RegisterState {
+    success: boolean;
+    error?: {
+        root?: string[];
+        name?: string[];
+        email?: string[];
+        password?: string[];
+        [key: string]: string[] | undefined;
+    };
+}
+
+export async function register(prevState: any, formData: FormData): Promise<RegisterState> {
     const data = Object.fromEntries(formData.entries());
     const parsed = registerSchema.safeParse(data);
 
     if (!parsed.success) {
-        return { error: parsed.error.flatten().fieldErrors };
+        const fieldErrors = parsed.error.flatten().fieldErrors;
+        return {
+            error: { ...fieldErrors, root: undefined },
+            success: false
+        };
     }
 
     const { name, email, password } = parsed.data;
@@ -39,7 +54,7 @@ export async function register(prevState: any, formData: FormData) {
             .where(eq(users.email, email));
 
         if (existingUser) {
-            return { error: { email: ["Email already registered"] } };
+            return { error: { email: ["Email already registered"] }, success: false };
         }
 
         // Hash password
@@ -56,9 +71,9 @@ export async function register(prevState: any, formData: FormData) {
 
         // TODO: Send verification email here
 
-        return { success: true };
+        return { success: true, error: {} };
     } catch (error) {
         console.error("Registration error:", error);
-        return { error: { root: ["Failed to create account. Please try again."] } };
+        return { error: { root: ["Failed to create account. Please try again."] }, success: false };
     }
 }

@@ -13,12 +13,16 @@ async function getUser(email: string) {
     return user;
 }
 
+import { env } from "@/env";
+
+// ... imports
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
     providers: [
         Google({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            clientId: env.GOOGLE_CLIENT_ID,
+            clientSecret: env.GOOGLE_CLIENT_SECRET,
         }),
         Credentials({
             credentials: {

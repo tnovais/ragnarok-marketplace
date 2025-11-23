@@ -7,12 +7,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=mysql://root:password@db:3306/ragnatrade
-      - NEXTAUTH_SECRET=supersecretkey123
-      - NEXTAUTH_URL=http://localhost:3000
+      - DATABASE_URL=mysql://root:${MYSQL_ROOT_PASSWORD}@db:3306/ragnatrade
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
       - SOCKET_URL=http://socket-server:3001
       - MEILI_HOST=http://meilisearch:7700
-      - MEILI_MASTER_KEY=masterKey
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
       - REDIS_URL=redis://redis:6379
     depends_on:
       - db
@@ -24,7 +24,7 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ragnatrade
     ports:
       - "3306:3306"
@@ -56,9 +56,10 @@ services:
     ports:
       - "7700:7700"
     environment:
-      - MEILI_MASTER_KEY=masterKey
+      - MEILI_MASTER_KEY=${MEILI_MASTER_KEY}
     volumes:
       - meili_data:/meili_data
+  # SigNoz Services Removed
 
 volumes:
   db_data:

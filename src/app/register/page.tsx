@@ -1,8 +1,8 @@
 "use client";
 
-import { register } from "@/server/actions/auth";
+import { register, type RegisterState } from "@/server/actions/auth";
 import Link from "next/link";
-import { Coins, ArrowLeft, UserPlus, Loader2 } from "lucide-react";
+import { Coins, ArrowLeft, UserPlus, Loader2, AlertCircle } from "lucide-react";
 import { useFormState, useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { useEffect } from "react";
@@ -22,7 +22,7 @@ function SubmitButton() {
     );
 }
 
-const initialState = {
+const initialState: RegisterState = {
     error: {},
     success: false,
 };
@@ -63,6 +63,12 @@ export default function RegisterPage() {
 
                 <div className="bg-card border border-border/50 rounded-2xl shadow-xl p-6 backdrop-blur-sm">
                     <form action={formAction} className="space-y-4">
+                        {state?.error?.root && (
+                            <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+                                <AlertCircle className="h-4 w-4" />
+                                <p>{state.error.root[0]}</p>
+                            </div>
+                        )}
                         <div className="space-y-2">
                             <label htmlFor="name" className="text-sm font-medium text-foreground/80">Full Name</label>
                             <input
@@ -73,7 +79,7 @@ export default function RegisterPage() {
                                 placeholder="John Doe"
                                 className="flex h-11 w-full rounded-lg border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                             />
-                            {state.error?.name && <p className="text-xs text-destructive">{state.error.name[0]}</p>}
+                            {state?.error?.name && <p className="text-xs text-destructive">{state.error.name[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="email" className="text-sm font-medium text-foreground/80">Email Address</label>
@@ -85,7 +91,7 @@ export default function RegisterPage() {
                                 required
                                 className="flex h-11 w-full rounded-lg border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                             />
-                            {state.error?.email && <p className="text-xs text-destructive">{state.error.email[0]}</p>}
+                            {state?.error?.email && <p className="text-xs text-destructive">{state.error.email[0]}</p>}
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="password" className="text-sm font-medium text-foreground/80">Password</label>
@@ -97,7 +103,7 @@ export default function RegisterPage() {
                                 className="flex h-11 w-full rounded-lg border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
                             />
                             <p className="text-xs text-muted-foreground">Min 8 chars, 1 upper, 1 lower, 1 number</p>
-                            {state.error?.password && (
+                            {state?.error?.password && (
                                 <div className="text-xs text-destructive space-y-1">
                                     {state.error.password.map((err: string, i: number) => (
                                         <p key={i}>{err}</p>

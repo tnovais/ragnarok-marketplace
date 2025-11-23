@@ -14,7 +14,7 @@ export async function sendEmail({
     html?: string;
     react?: React.ReactNode;
 }) {
-    if (process.env.NODE_ENV === 'development' && !env.RESEND_API_KEY?.startsWith('re_')) {
+    if (env.NODE_ENV === 'development' && !env.RESEND_API_KEY?.startsWith('re_')) {
         console.log("📧 [DEV] Email Mock:");
         console.log(`To: ${to}`);
         console.log(`Subject: ${subject}`);

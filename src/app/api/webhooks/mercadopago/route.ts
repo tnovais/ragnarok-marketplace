@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
             const status = "approved"; // paymentData.status
 
             if (status === "approved") {
-                // Find transaction by paymentId
+                // 1. Try to find in Transactions (Item Purchase)
                 const [transaction] = await db
                     .select()
                     .from(transactions)
@@ -36,24 +36,36 @@ export async function POST(request: NextRequest) {
 
                 if (transaction && transaction.status === "pending") {
                     await db.transaction(async (tx) => {
-                        // Update transaction
                         await tx
                             .update(transactions)
                             .set({ status: "completed", updatedAt: new Date() })
                             .where(eq(transactions.id, transaction.id));
-
-                        // Release funds to seller (or hold in escrow)
-                        // For now, let's say it goes to "completed" which means money is in escrow/safe
-                        // If we want to release to seller immediately:
-                        /*
-                        await tx.update(users)
-                            .set({ walletBalance: sql`${users.walletBalance} + ${transaction.netAmount}` })
-                            .where(eq(users.id, transaction.sellerId));
-                        */
-
-                        // Send email notification (future)
                     });
-                    // console.log(`Payment ${paymentId} approved for transaction ${transaction.id}`);
+                    return NextResponse.json({ success: true });
+                }
+
+                // 2. Try to find in Deposits (Wallet Top-up)
+                const { deposits } = await import("@/db/schema");
+                const [deposit] = await db
+                    .select()
+                    .from(deposits)
+                    .where(eq(deposits.paymentId, paymentId));
+
+                if (deposit && deposit.status === "pending") {
+                    await db.transaction(async (tx) => {
+                        // Mark deposit as approved
+                        await tx
+                            .update(deposits)
+                            .set({ status: "approved", updatedAt: new Date() })
+                            .where(eq(deposits.id, deposit.id));
+
+                        // Add funds to user wallet
+                        await tx
+                            .update(users)
+                            .set({ walletBalance: sql`${users.walletBalance} + ${deposit.amount}` })
+                            .where(eq(users.id, deposit.userId));
+                    });
+                    return NextResponse.json({ success: true });
                 }
             }
         }

@@ -30,11 +30,18 @@ export async function createListing(formData: FormData) {
     const rawData = Object.fromEntries(formData.entries());
 
     // Handle type conversions
+    let screenshots = [];
+    try {
+        screenshots = rawData.screenshots ? JSON.parse(rawData.screenshots as string) : [];
+    } catch (e) {
+        screenshots = [];
+    }
+
     const data = {
         ...rawData,
         categoryId: Number(rawData.categoryId),
         serverId: Number(rawData.serverId),
-        screenshots: rawData.screenshots ? JSON.parse(rawData.screenshots as string) : [],
+        screenshots,
     };
 
     const parsed = createListingSchema.safeParse(data);

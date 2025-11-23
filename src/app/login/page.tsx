@@ -1,12 +1,6 @@
-import { signIn } from "@/auth";
-import Link from "next/link";
-import { Coins, ArrowLeft, AlertCircle } from "lucide-react";
-import { AuthError } from "next-auth";
-import { redirect } from "next/navigation";
-
 "use client";
 
-import { signIn } from "next-auth/react"; // Using client-side signIn for better control
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { Coins, ArrowLeft, AlertCircle, Loader2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";

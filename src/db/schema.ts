@@ -52,6 +52,7 @@ export const accounts = mysqlTable("accounts", {
 export const servers = mysqlTable("servers", {
     id: int("id").primaryKey().autoincrement(),
     name: varchar("name", { length: 50 }).notNull().unique(),
+    slug: varchar("slug", { length: 50 }).notNull().unique(),
     isActive: boolean("is_active").default(true),
 });
 
@@ -59,6 +60,7 @@ export const servers = mysqlTable("servers", {
 export const categories = mysqlTable("categories", {
     id: int("id").primaryKey().autoincrement(),
     name: varchar("name", { length: 100 }).notNull(),
+    slug: varchar("slug", { length: 100 }).notNull().unique(),
     description: text("description"),
     isActive: boolean("is_active").default(true),
 });
@@ -71,6 +73,7 @@ export const listings = mysqlTable("listings", {
     serverId: int("server_id").notNull().references(() => servers.id),
     title: varchar("title", { length: 200 }).notNull(),
     description: text("description").notNull(),
+    type: varchar("type", { length: 50 }).notNull().default("item"), // item, zeny, account
     price: decimal("price", { precision: 10, scale: 2 }).notNull(),
     itemName: varchar("item_name", { length: 100 }).notNull(),
     screenshots: json("screenshots").$type<string[]>().default([]),
@@ -139,6 +142,19 @@ export const withdrawals = mysqlTable("withdrawals", {
     status: varchar("status", { length: 50 }).notNull().default("pending"),
     processedAt: timestamp("processed_at"),
     createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Deposits
+export const deposits = mysqlTable("deposits", {
+    id: varchar("id", { length: 36 }).primaryKey().notNull(), // UUID
+    userId: varchar("user_id", { length: 255 }).notNull().references(() => users.id),
+    amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+    status: varchar("status", { length: 50 }).notNull().default("pending"), // pending, approved, rejected
+    paymentId: varchar("payment_id", { length: 255 }), // MercadoPago ID
+    qrCode: text("qr_code"), // Copy/Paste code
+    qrCodeBase64: text("qr_code_base64"), // QR Image
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow().onUpdateNow(),
 });
 
 // Supplier Offers

@@ -44,6 +44,14 @@ export async function createDispute(formData: FormData) {
 
         if (transaction.status === 'disputed') return { success: false, error: "Already disputed" };
 
+        // Enforce 7-day dispute window for completed transactions
+        if (transaction.completedAt) {
+            const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            if (transaction.completedAt < sevenDaysAgo) {
+                return { success: false, error: "Dispute period of 7 days has expired" };
+            }
+        }
+
         // 2. Create Dispute
         const newDispute: typeof disputes.$inferInsert = {
             id: randomUUID(),

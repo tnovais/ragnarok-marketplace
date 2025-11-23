@@ -16,6 +16,30 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
         <form action={createListing} className="space-y-6 border p-6 rounded-lg bg-card shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
+                    <label htmlFor="type" className="block text-sm font-medium mb-1">
+                        Listing Type
+                    </label>
+                    <select
+                        name="type"
+                        id="type"
+                        required
+                        className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        onChange={(e) => {
+                            const label = document.getElementById("itemNameLabel");
+                            if (label) {
+                                if (e.target.value === "zeny") label.innerText = "Amount (Zeny)";
+                                else if (e.target.value === "account") label.innerText = "Account Level/Class";
+                                else label.innerText = "Item Name";
+                            }
+                        }}
+                    >
+                        <option value="item">Item</option>
+                        <option value="zeny">Zeny</option>
+                        <option value="account">Account</option>
+                    </select>
+                </div>
+
+                <div>
                     <label htmlFor="title" className="block text-sm font-medium mb-1">
                         Listing Title
                     </label>
@@ -24,20 +48,20 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
                         name="title"
                         id="title"
                         required
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     />
                 </div>
 
                 <div>
-                    <label htmlFor="itemName" className="block text-sm font-medium mb-1">
-                        Item/Zeny Name
+                    <label htmlFor="itemName" id="itemNameLabel" className="block text-sm font-medium mb-1">
+                        Item Name
                     </label>
                     <input
                         type="text"
                         name="itemName"
                         id="itemName"
                         required
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     />
                 </div>
             </div>
@@ -54,7 +78,7 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
                         step="0.01"
                         min="0"
                         required
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     />
                 </div>
 
@@ -66,7 +90,7 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
                         name="serverId"
                         id="serverId"
                         required
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {serverList.map((server) => (
                             <option key={server.id} value={server.id}>
@@ -85,7 +109,7 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
                     name="categoryId"
                     id="categoryId"
                     required
-                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {categoryList.map((category) => (
                         <option key={category.id} value={category.id}>
@@ -104,7 +128,7 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
                     id="description"
                     rows={4}
                     required
-                    className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex min-h-[60px] w-full rounded-md border border-input bg-background text-foreground px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 ></textarea>
             </div>
 
@@ -144,7 +168,7 @@ export function CreateListingForm({ serverList, categoryList }: Props) {
                                 setUploading(false);
                             }
                         }}
-                        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-full rounded-md border border-input bg-background text-foreground px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                     />
                 </div>
                 <input type="hidden" name="screenshots" id="screenshots" value={imageUrl} />
